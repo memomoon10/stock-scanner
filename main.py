@@ -180,10 +180,9 @@ def receive_update():
     return "OK", 200
 
 if __name__ == "__main__":
-    # تشغيل المراقبة التلقائية في خيط منفصل (Background Thread)
     monitor_thread = threading.Thread(target=monitor_stocks)
     monitor_thread.daemon = True
     monitor_thread.start()
     
-    # تشغيل سيرفر الويب لاستقبال أوامر التحليل والابقيش على المشروع نشطاً 24/7
-    app.run(host="0.0.0.0", port=8080)
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
