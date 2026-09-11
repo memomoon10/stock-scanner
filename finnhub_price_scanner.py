@@ -2,6 +2,18 @@ import yfinance as yf
 import pandas as pd
 import requests
 import time
+import threading
+from flask import Flask
+
+# إنشاء سيرفر ويب وهمي لكي تقبل منصة Render تشغيله مجاناً
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return "Stock Scanner Bot is Running 24/7! 🚀"
+
+def run_flask():
+    app.run(host="0.0.0.0", port=8080)
 
 def send_telegram_message(message):
     TOKEN = "8827525799:AAHb3eGB6tdtbSSosBaPj_7rJSbLgYzCL_I"
@@ -87,4 +99,9 @@ def monitor_stocks():
         time.sleep(300)
 
 if __name__ == "__main__":
+    # تشغيل سيرفر الويب في خلفية منفصلة
+    flask_thread = threading.Thread(target=run_flask)
+    flask_thread.start()
+    
+    # تشغيل مراقبة الأسهم
     monitor_stocks()
