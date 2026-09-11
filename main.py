@@ -16,7 +16,7 @@ TELEGRAM_API_URL = f"https://api.telegram.org/bot{TOKEN}"
 
 @app.route('/')
 def home():
-    return "Unified Stock Bot (Scanner + Analyzer) is Running 24/7! 🚀"
+    return "بوت الأسهم المدمج (المراقبة والتحليل الفوري) يعمل 24/7! 🚀"
 
 def send_telegram_message(chat_id, message):
     url = f"{TELEGRAM_API_URL}/sendMessage"
@@ -30,7 +30,7 @@ def send_telegram_message(chat_id, message):
     except Exception as e:
         print(f"خطأ في إرسال الرسالة: {e}")
 
-# --- 2. وظيفة بوت التحليل الشامل عند طلب السهم ---
+# --- 2. وظيفة بوت التحليل الشامل عند طلب السهم (بالعربي بالكامل) ---
 def analyze_stock(ticker_symbol):
     try:
         ticker = yf.Ticker(ticker_symbol.upper())
@@ -69,7 +69,7 @@ def analyze_stock(ticker_symbol):
         
         ema_20 = ema_20_series.iloc[-1]
         ema_50 = ema_50_series.iloc[-1]
-        trend = "📈 صعودي (Bullish) قوي" if current_price > ema_20 and ema_20 > ema_50 else "📉 هبوطي (Bearish) أو تصحيحي"
+        trend = "📈 صعودي قوي" if current_price > ema_20 and ema_20 > ema_50 else "📉 هبوطي أو تصحيحي"
 
         volume_today = hist['Volume'].iloc[-1]
         volume_avg_10 = hist['Volume'].tail(10).mean()
@@ -104,7 +104,7 @@ def analyze_stock(ticker_symbol):
 
 # --- 3. وظيفة المراقبة التلقائية (في الخلفية) ---
 def monitor_stocks():
-    tickers = ["SIRI", "NOK", "SNDL", "PLTR", "NIO", "SOFI", "F", "BAC", "AMD", "INTC", "ZOM", "GPRO"]
+    tickers = ["SIRI", "NOK", "SNDL", "PLTR", "NIO", "SOFI", "F", "BAC", "AMD", "INTC", "GPRO"]
     print("🚀 بدء وضع المراقبة التلقائية للأسهم في الخلفية...")
     
     while True:
@@ -161,7 +161,7 @@ def monitor_stocks():
 
         time.sleep(300) # فحص كل 5 دقائق
 
-# --- 4. استقبال رسائل التليجرام الفورية للتحليل ---
+# --- 4. استقبال رسائل التليجرام الفورية للتحليل (بالعربي) ---
 @app.route('/webhook', methods=['POST'])
 def receive_update():
     json_data = request.get_json()
@@ -171,17 +171,17 @@ def receive_update():
         text = json_data['message'].get('text', '').strip()
         
         if text.startswith('/start'):
-            send_telegram_message(chat_id, "مرحباً بك! أنا بوت الأسهم المدمج 🚀\nأرسل رمز السهم مباشرة (مثل: `AAPL`) وسأحلله لك.")
+            send_telegram_message(chat_id, "مرحباً بك! أنا بوت الأسهم المدمج 🚀\nأرسل رمز السهم مباشرة (مثل: `AAPL` أو `TSLA`) وسأقوم بتحليله لك فوراً باللغة العربية.")
         else:
             ticker = text.replace('/', '').strip()
             if len(ticker) <= 6:
-                send_telegram_message(chat_id, f"🔍 جاري تحليل السهم `{ticker.upper()}`، يرجى الانتظار...")
+                send_telegram_message(chat_id, f"🔍 جاري تحليل السهم `{ticker.upper()}`، يرجى الانتظار قليلًا...")
                 analysis_result = analyze_stock(ticker)
                 send_telegram_message(chat_id, analysis_result)
     return "OK", 200
 
 if __name__ == "__main__":
-    # تشغيل المراقبة التلقائية في خيط خلفي
+    # تشغيل المراقبة التلقائية في خلفية الخادم
     monitor_thread = threading.Thread(target=monitor_stocks)
     monitor_thread.daemon = True
     monitor_thread.start()
